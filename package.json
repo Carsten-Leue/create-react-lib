@@ -1,6 +1,7 @@
 {
   "name": "create-react-lib",
-  "version": "1.0.0",
+  "version": "0.0.1",
+  "private": false,
   "repository": "git@github.com:Carsten-Leue/create-react-lib.git",
   "license": "MIT",
   "author": "Dr. Carsten Leue <carsten.leue@gmx.net>",
