@@ -4,27 +4,40 @@
   "repository": "git@github.com:Carsten-Leue/create-react-lib.git",
   "license": "MIT",
   "author": "Dr. Carsten Leue <carsten.leue@gmx.net>",
+  "bin": {
+    "create-react-lib": "./bin/index.js"
+  },
   "scripts": {
-    "build": "ng-packagr -p package.json"
+    "build": "ng-packagr -p package.json",
+    "postbuild": "cpx \"bin/*.js\" dist/bin/",
+    "test": "jest --run-in-band"
   },
   "dependencies": {
     "commander": "^4.0.0",
     "cross-spawn": "^7.0.1",
-    "envinfo": "^7.4.0"
+    "fs-extra": "^8.1.0"
   },
   "devDependencies": {
     "@angular/compiler": "^8.2.13",
     "@angular/compiler-cli": "^8.2.13",
     "@angular/core": "^8.2.13",
+    "@types/cross-spawn": "^6.0.1",
+    "@types/fs-extra": "^8.0.1",
+    "@types/jest": "^24.0.22",
+    "cpx": "^1.5.0",
+    "jest": "^24.9.0",
     "ng-packagr": "^5.7.1",
+    "rxjs": "^6.4.0",
+    "ts-jest": "^24.1.0",
     "tslib": "^1.9.0",
-    "typescript": ">=3.4 <3.6"
+    "typescript": ">=3.4 <3.6",
+    "zone.js": "~0.9.1"
   },
   "ngPackage": {
     "whitelistedNonPeerDependencies": [
       "commander",
       "cross-spawn",
-      "envinfo"
+      "fs-extra"
     ]
   }
 }
