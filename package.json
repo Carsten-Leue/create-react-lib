@@ -1,0 +1,30 @@
+{
+  "name": "create-react-lib",
+  "version": "1.0.0",
+  "repository": "git@github.com:Carsten-Leue/create-react-lib.git",
+  "license": "MIT",
+  "author": "Dr. Carsten Leue <carsten.leue@gmx.net>",
+  "scripts": {
+    "build": "ng-packagr -p package.json"
+  },
+  "dependencies": {
+    "commander": "^4.0.0",
+    "cross-spawn": "^7.0.1",
+    "envinfo": "^7.4.0"
+  },
+  "devDependencies": {
+    "@angular/compiler": "^8.2.13",
+    "@angular/compiler-cli": "^8.2.13",
+    "@angular/core": "^8.2.13",
+    "ng-packagr": "^5.7.1",
+    "tslib": "^1.9.0",
+    "typescript": ">=3.4 <3.6"
+  },
+  "ngPackage": {
+    "whitelistedNonPeerDependencies": [
+      "commander",
+      "cross-spawn",
+      "envinfo"
+    ]
+  }
+}
