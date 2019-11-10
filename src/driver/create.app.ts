@@ -70,6 +70,10 @@ export function rewriteFiles(aRoot: string) {
 }
 
 function fixPackage(aPkg: any, aUseCarbon: boolean) {
+  // keywords
+  const keywords = aPkg.keywords || [];
+  // init
+  keywords.push('react', 'library', 'ng-packagr');
   // move all dependencies
   const dependencies = {};
   const devDependencies = aPkg.devDependencies || {};
@@ -101,6 +105,8 @@ function fixPackage(aPkg: any, aUseCarbon: boolean) {
       devDependencies['carbon-components-react'];
     peerDependencies['carbon-components'] =
       devDependencies['carbon-components'];
+    // keywords
+    keywords.push('carbon');
   }
   // add scripts
   const scripts = aPkg.scripts || {};
@@ -108,7 +114,14 @@ function fixPackage(aPkg: any, aUseCarbon: boolean) {
   scripts['build'] = 'ng-packagr -p package.json';
   scripts['postbuild'] = 'cpx "src/lib/**/*.scss" ./dist';
   // ok
-  return { ...aPkg, dependencies, devDependencies, peerDependencies, scripts };
+  return {
+    ...aPkg,
+    dependencies,
+    devDependencies,
+    peerDependencies,
+    scripts,
+    keywords: Array.from(new Set(keywords))
+  };
 }
 
 export function rewritePackage(aRoot: string, aUseCarbon: boolean) {

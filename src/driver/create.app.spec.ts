@@ -3,66 +3,80 @@ import { tmpdir } from 'os';
 import { join } from 'path';
 
 import { ASSETS } from '../utils/assets';
-import { rewriteTypescriptVersion } from './create.app';
+import {
+  rewriteTypescriptVersion,
+  createFiles,
+  rewritePackage,
+  rewriteFiles
+} from './create.app';
 
 describe('create.app', () => {
   const DST_DIR = join(tmpdir(), 'create.app');
   const ROOT_DIR = join(ASSETS, 'create-react-app');
 
-  fit('should fix the typescript version', () => {
-    // test copy
-    const delDir = () => remove(DST_DIR);
-    // copy dir
-    const copyDir = () => copy(ROOT_DIR, DST_DIR);
-    // rewrite
-    const rewrite = () => rewriteTypescriptVersion(DST_DIR);    
+  const TIMEOUT = 20000;
 
-    const result$ = delDir().then(copyDir).then(rewrite);
+  // test copy
+  const delDir = () => remove(DST_DIR);
+  // copy dir
+  const copyDir = () => copy(ROOT_DIR, DST_DIR);
 
-    return result$;
-  }, 10000);
+  it(
+    'should fix the typescript version',
+    () => {
+      // rewrite
+      const rewrite = () => rewriteTypescriptVersion(DST_DIR);
 
-/*  it('should create files', (done) => {
-    // test copy
-    const deleted$ = rxDeleteDir(DST_DIR);
-    const copied$ = rxPipe(
-      deleted$,
-      mergeMapTo(rxCopyDir(ROOT_DIR, DST_DIR, true))
-    );
-    const pkg$ = rxPipe(copied$, count(), mergeMap(() => createFiles(DST_DIR)));
+      const result$ = delDir()
+        .then(copyDir)
+        .then(rewrite);
 
-    pkg$.subscribe(console.log, done, () => done());
-  });
+      return result$;
+    },
+    TIMEOUT
+  );
 
-  it('should rewrite package', (done) => {
-    // test copy
-    const deleted$ = rxDeleteDir(DST_DIR);
-    const copied$ = rxPipe(
-      deleted$,
-      mergeMapTo(rxCopyDir(ROOT_DIR, DST_DIR, true))
-    );
-    const pkg$ = rxPipe(
-      copied$,
-      count(),
-      mergeMap(() => rewritePackage(DST_DIR, true))
-    );
+  it(
+    'should create files',
+    () => {
+      // create files
+      const create = () => createFiles(DST_DIR);
 
-    pkg$.subscribe(console.log, done, () => done());
-  });
+      const result$ = delDir()
+        .then(copyDir)
+        .then(create);
 
-  it('should rename the CSS files', (done) => {
-    // test copy
-    const deleted$ = rxDeleteDir(DST_DIR);
-    const copied$ = rxPipe(
-      deleted$,
-      mergeMapTo(rxCopyDir(ROOT_DIR, DST_DIR, true))
-    );
-    const css$ = rxPipe(
-      copied$,
-      count(),
-      mergeMap(() => rewriteFiles(DST_DIR))
-    );
+      return result$;
+    },
+    TIMEOUT
+  );
 
-    css$.subscribe(console.log, done, () => done());
-  }); */
+  it(
+    'should rewrite package',
+    () => {
+      // rewrite
+      const rewrite = () => rewritePackage(DST_DIR, true);
+
+      const result$ = delDir()
+        .then(copyDir)
+        .then(rewrite);
+
+      return result$;
+    },
+    TIMEOUT
+  );
+
+  it(
+    'should rename the CSS files',
+    () => {
+      // rewrite css files
+      const rewrite = () => rewriteFiles(DST_DIR);
+      const result$ = delDir()
+        .then(copyDir)
+        .then(rewrite);
+
+      return result$;
+    },
+    TIMEOUT
+  );
 });
