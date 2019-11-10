@@ -6,8 +6,15 @@
   "license": "MIT",
   "author": "Dr. Carsten Leue <carsten.leue@gmx.net>",
   "bin": {
-    "create-react-lib": "./bin/index.js"
+    "create-react-lib-ex": "./bin/index.js"
   },
+  "keywords": [
+    "react",
+    "library",
+    "cli",
+    "component",
+    "ng-packagr"
+  ],
   "scripts": {
     "build": "ng-packagr -p package.json",
     "postbuild": "cpx \"bin/*.js\" dist/bin/",
