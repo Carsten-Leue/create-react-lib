@@ -5,6 +5,10 @@ import { cwd } from 'process';
 
 import { install } from './install';
 import { spawnFile } from './spawn';
+import { ADDONS } from './storybook/addons';
+import { CONFIG } from './storybook/config';
+import { TSCONFIG } from './storybook/tsconfig';
+import { WEBPACK_CONFIG } from './storybook/webpack.config';
 
 function shouldUseYarn() {
   try {
@@ -30,6 +34,14 @@ const CARBON_PACKAGES = [
   'carbon-components',
   'carbon-icons',
   'prop-types'
+];
+const STORYBOOK_PACKAGES = [
+  '@storybook/addon-actions',
+  '@storybook/addon-console',
+  '@storybook/addon-info',
+  '@storybook/react',
+  'awesome-typescript-loader',
+  'react-docgen-typescript-loader'
 ];
 
 function renameStyle(aFile: string) {
@@ -69,7 +81,7 @@ export function rewriteFiles(aRoot: string) {
   return Promise.all([renStyles$, rewriteTsx$, gitignore$]);
 }
 
-function fixPackage(aPkg: any, aUseCarbon: boolean) {
+function fixPackage(aPkg: any, aUseCarbon: boolean, aUseStorybook: boolean) {
   // keywords
   const keywords = aPkg.keywords || [];
   // init
@@ -108,11 +120,20 @@ function fixPackage(aPkg: any, aUseCarbon: boolean) {
     // keywords
     keywords.push('carbon');
   }
+  // storybook dependencies
+  if (aUseStorybook) {
+    // keywords
+    keywords.push('storybook');
+  }
   // add scripts
   const scripts = aPkg.scripts || {};
   // add the scripts
   scripts['build'] = 'ng-packagr -p package.json';
   scripts['postbuild'] = 'cpx "src/lib/**/*.scss" ./dist';
+  // storybook dependencies
+  if (aUseStorybook) {
+    scripts['storybook'] = 'start-storybook -p 9001 -c .storybook';
+  }
   // ok
   return {
     ...aPkg,
@@ -124,17 +145,17 @@ function fixPackage(aPkg: any, aUseCarbon: boolean) {
   };
 }
 
-export function rewritePackage(aRoot: string, aUseCarbon: boolean) {
+export function rewritePackage(aRoot: string, aUseCarbon: boolean, aUseStorybook: boolean) {
   // load the package
   const name = join(aRoot, 'package.json');
   return readFile(name, 'utf-8')
     .then(data => JSON.parse(data))
-    .then(pkg => fixPackage(pkg, aUseCarbon))
+    .then(pkg => fixPackage(pkg, aUseCarbon, aUseStorybook))
     .then(pkg => JSON.stringify(pkg, undefined, 2))
     .then(data => writeFile(name, data));
 }
 
-export function createFiles(aRoot: string) {
+export function createFiles(aRoot: string, aUseCarbon: boolean, aUseStorybook: boolean) {
   // lib folder
   const src = join(aRoot, 'src');
   const lib = join(src, 'lib');
@@ -178,6 +199,38 @@ export function createFiles(aRoot: string) {
     publicApi$,
     indexScssCmp$
   ];
+
+  // add storybook dependencies
+  if (aUseStorybook) {
+    // storybook source dir
+    const stories = join(src, 'stories');
+    const stories$ = mkdir(stories);
+    // storybook dir
+    const storybook = join(aRoot, '.storybook');
+    const storybook$ = mkdir(storybook);
+    // addons
+    const addons = join(storybook, 'addons.js');
+    const addons$ = storybook$.then(() =>
+      writeFile(addons, ADDONS)
+    );
+    // config
+    const config = join(storybook, 'config.js');
+    const config$ = storybook$.then(() =>
+      writeFile(config, CONFIG)
+    );
+    // tsconfig
+    const tsconfig = join(storybook, 'tsconfig.json');
+    const tsconfig$ = storybook$.then(() =>
+      writeFile(tsconfig, TSCONFIG)
+    );
+    // tsconfig
+    const webpack = join(storybook, 'webpack.config.js');
+    const webpack$ = storybook$.then(() =>
+      writeFile(webpack, WEBPACK_CONFIG)
+    );
+    // attach
+    all.push(storybook$, addons$, config$, tsconfig$, webpack$, stories$);
+  }
 
   // create all artifacts
   return Promise.all(all);
@@ -249,7 +302,8 @@ function createReactApp(aAppName: string, aRoot: string, aUseYarn: boolean) {
 export function createApplication(
   aName: string,
   aUseNpm: boolean,
-  aUseCarbon: boolean
+  aUseCarbon: boolean,
+  aUseStorybook: boolean
 ) {
   const root = resolve(aName);
   const appName = basename(root);
@@ -262,6 +316,9 @@ export function createApplication(
   if (aUseCarbon) {
     packages.push(...CARBON_PACKAGES);
   }
+  if (aUseStorybook) {
+    packages.push(...STORYBOOK_PACKAGES);
+  }
 
   // create the app
   const app$ = createReactApp(appName, root, useYarn);
@@ -270,9 +327,9 @@ export function createApplication(
   // fix the css
   const css$ = installed$.then(() => rewriteFiles(root));
   // fix the package
-  const pkg$ = installed$.then(() => rewritePackage(root, aUseCarbon));
+  const pkg$ = installed$.then(() => rewritePackage(root, aUseCarbon, aUseStorybook));
   // create default files
-  const files$ = installed$.then(() => createFiles(root));
+  const files$ = installed$.then(() => createFiles(root, aUseCarbon, aUseStorybook));
   // done
   return Promise.all([app$, installed$, css$, pkg$, files$]);
 }

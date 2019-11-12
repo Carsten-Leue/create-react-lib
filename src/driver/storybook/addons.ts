@@ -1,0 +1,1 @@
+export const ADDONS = `import '@storybook/addon-actions/register';`;

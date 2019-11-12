@@ -22,6 +22,21 @@ describe('create.app', () => {
   const copyDir = () => copy(ROOT_DIR, DST_DIR);
 
   it(
+    'should create storybook',
+    () => {
+      // create files
+      const create = () => createFiles(DST_DIR, true, true);
+
+      const result$ = delDir()
+        .then(copyDir)
+        .then(create);
+
+      return result$;
+    },
+    TIMEOUT
+  );
+
+  it(
     'should fix the typescript version',
     () => {
       // rewrite
@@ -40,7 +55,7 @@ describe('create.app', () => {
     'should create files',
     () => {
       // create files
-      const create = () => createFiles(DST_DIR);
+      const create = () => createFiles(DST_DIR, true, false);
 
       const result$ = delDir()
         .then(copyDir)
@@ -55,7 +70,7 @@ describe('create.app', () => {
     'should rewrite package',
     () => {
       // rewrite
-      const rewrite = () => rewritePackage(DST_DIR, true);
+      const rewrite = () => rewritePackage(DST_DIR, true, false);
 
       const result$ = delDir()
         .then(copyDir)
