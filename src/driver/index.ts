@@ -15,6 +15,7 @@ function createProgram(): [string, Command] {
     })
     .option('--verbose', 'print additional logs')
     .option('--carbon', 'include support for Carbon components')
+    .option('--storybook', 'include support for storybook')
     .option('--use-npm')
     .allowUnknownOption()
     .parse(process.argv);
@@ -29,6 +30,7 @@ export function createApp() {
   return createApplication(
     programName,
     !!cmd.useNpm,
-    !!cmd.carbon
+    !!cmd.carbon,
+    !!cmd.storybook
   ).then(() => {}, (error) => console.error(error));
 }
