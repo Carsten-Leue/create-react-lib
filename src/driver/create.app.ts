@@ -205,6 +205,9 @@ export function createFiles(aRoot: string, aUseCarbon: boolean, aUseStorybook: b
     // storybook source dir
     const stories = join(src, 'stories');
     const stories$ = mkdir(stories);
+    // components 
+    const storyCmp = join(stories, 'components');
+    const storyCmp$ = stories$.then(() => mkdir(storyCmp));
     // storybook dir
     const storybook = join(aRoot, '.storybook');
     const storybook$ = mkdir(storybook);
@@ -229,7 +232,7 @@ export function createFiles(aRoot: string, aUseCarbon: boolean, aUseStorybook: b
       writeFile(webpack, WEBPACK_CONFIG)
     );
     // attach
-    all.push(storybook$, addons$, config$, tsconfig$, webpack$, stories$);
+    all.push(storybook$, addons$, config$, tsconfig$, webpack$, stories$, storyCmp$);
   }
 
   // create all artifacts
