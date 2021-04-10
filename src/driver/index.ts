@@ -1,13 +1,25 @@
 import { Command } from 'commander';
-
 import { createApplication } from './create.app';
+
 
 const NAME = 'create-react-lib';
 
-function createProgram(): [string, Command] {
+class CreateReactAppCommand extends Command {
+  useNpm?: boolean;
+
+  carbon?: boolean;
+
+  storybook?: boolean;
+
+  constructor(name: string) {
+    super(name);
+  }
+}
+
+function createProgram(): [string, CreateReactAppCommand] {
   let projectName = 'defaultProject';
 
-  const program = new Command(NAME)
+  const program: CreateReactAppCommand = new CreateReactAppCommand(NAME)
     .arguments('<project-directory>')
     .usage('<project-directory> [options]')
     .action((name) => {
@@ -32,5 +44,8 @@ export function createApp() {
     !!cmd.useNpm,
     !!cmd.carbon,
     !!cmd.storybook
-  ).then(() => {}, (error) => console.error(error));
+  ).then(
+    () => {},
+    (error) => console.error(error)
+  );
 }

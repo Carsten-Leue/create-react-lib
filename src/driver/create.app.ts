@@ -295,7 +295,7 @@ function createReactApp(aAppName: string, aRoot: string, aUseYarn: boolean) {
         });
         return;
       }
-      resolve();
+      resolve(undefined);
     });
   });
   // done

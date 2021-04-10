@@ -31,7 +31,7 @@ export function install(
         });
         return;
       }
-      resolve();
+      resolve(undefined);
     });
   });
 }
