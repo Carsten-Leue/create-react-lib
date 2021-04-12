@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 // load
-const { main } = require('./../bundles/create-react-lib-ex.umd.min');
+const { main } = require('./../cli/public_api');
 // execute
 main();
